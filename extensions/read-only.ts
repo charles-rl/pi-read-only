@@ -1,11 +1,11 @@
 /**
  * Read-Only Mode (toggleable)
  *
- * Starts read-only. Toggle during a session with:
+ * Starts in normal write mode. Toggle into read-only during a session with:
+ *   Alt+M                toggle
  *   /readonly            toggle
  *   /readonly on|off     set explicitly
- *   Alt+M                toggle
- *   pi --editable        start with write tools enabled
+ *   pi --readonly        start a session in read-only mode
  *
  * Read-only = edit/write hidden from the model and blocked if called, and bash
  * restricted to a read-only command allowlist. The tool_call guard reads live
@@ -56,7 +56,7 @@ function isSafeCommand(command: string): boolean {
 }
 
 export default function readOnlyExtension(pi: ExtensionAPI): void {
-	let readOnly = true;
+	let readOnly = false;
 	let toolsBefore: string[] | undefined;
 
 	function apply(): void {
@@ -70,7 +70,11 @@ export default function readOnlyExtension(pi: ExtensionAPI): void {
 	}
 
 	function showStatus(ctx: ExtensionContext): void {
-		if (ctx.hasUI) ctx.ui.setStatus("read-only", readOnly ? ctx.ui.theme.fg("warning", "🔒 read-only") : undefined);
+		if (!ctx.hasUI) return;
+		ctx.ui.setStatus(
+			"read-only",
+			readOnly ? ctx.ui.theme.fg("warning", "🔒 read-only") : ctx.ui.theme.fg("success", "✏️ write"),
+		);
 	}
 
 	function setReadOnly(next: boolean, ctx: ExtensionContext): void {
@@ -82,9 +86,9 @@ export default function readOnlyExtension(pi: ExtensionAPI): void {
 	}
 
 	// NOTE: Pi parses extension flags literally; `--no-<flag>` is NOT auto-generated,
-	// so use an explicit opt-out flag instead.
-	pi.registerFlag("editable", {
-		description: "Start with write tools enabled (disables the read-only default)",
+	// so use an explicit opt-in flag instead.
+	pi.registerFlag("readonly", {
+		description: "Start this session in read-only mode",
 		type: "boolean",
 		default: false,
 	});
@@ -103,8 +107,6 @@ export default function readOnlyExtension(pi: ExtensionAPI): void {
 	});
 
 	pi.on("session_start", async (_event, ctx) => {
-		if (pi.getFlag("editable") === true) readOnly = false;
-
 		const last = ctx.sessionManager
 			.getEntries()
 			.filter((e: { type: string; customType?: string }) => e.type === "custom" && e.customType === "read-only")
@@ -113,6 +115,8 @@ export default function readOnlyExtension(pi: ExtensionAPI): void {
 			readOnly = last.data.readOnly ?? readOnly;
 			toolsBefore = last.data.toolsBefore;
 		}
+		// Explicit flag forces read-only for this session.
+		if (pi.getFlag("readonly") === true) readOnly = true;
 
 		apply();
 		showStatus(ctx);

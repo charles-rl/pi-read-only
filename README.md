@@ -2,6 +2,9 @@
 
 A [Pi](https://pi.dev) extension that adds a **toggleable read-only mode**.
 
+A session starts in normal **write** mode. Read-only is opt-in: toggle it on when you
+want to inspect without modifying anything.
+
 When read-only mode is on:
 
 - `edit` and `write` are hidden from the model and blocked if called.
@@ -28,8 +31,10 @@ pi -e git:github.com/charles-rl/pi-read-only
 |---|---|
 | Toggle | `Alt+M` or `/readonly` |
 | Turn on | `/readonly on` |
-| Turn off | `/readonly off` |
-| Start with writes enabled | `pi --editable` |
+| Turn off (back to write) | `/readonly off` |
+| Start in read-only | `pi --readonly` |
+
+The current mode is shown in the footer: `✏️ write` or `🔒 read-only`.
 
 ## How it works
 
