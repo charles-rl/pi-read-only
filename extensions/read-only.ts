@@ -73,7 +73,7 @@ export default function readOnlyExtension(pi: ExtensionAPI): void {
 		if (!ctx.hasUI) return;
 		ctx.ui.setStatus(
 			"read-only",
-			readOnly ? ctx.ui.theme.fg("warning", "🔒 read-only") : ctx.ui.theme.fg("success", "✏️ write"),
+			readOnly ? ctx.ui.theme.fg("warning", "mode: read-only") : ctx.ui.theme.fg("success", "mode: write"),
 		);
 	}
 

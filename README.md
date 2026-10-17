@@ -34,7 +34,7 @@ pi -e git:github.com/charles-rl/pi-read-only
 | Turn off (back to write) | `/readonly off` |
 | Start in read-only | `pi --readonly` |
 
-The current mode is shown in the footer: `✏️ write` or `🔒 read-only`.
+The current mode is shown in the footer as `mode: write` or `mode: read-only`.
 
 ## How it works
 
