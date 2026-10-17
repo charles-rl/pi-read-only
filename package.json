@@ -1,0 +1,14 @@
+{
+  "name": "pi-read-only",
+  "version": "1.0.0",
+  "description": "Toggleable read-only mode extension for Pi: hides/blocks edit and write, and restricts bash to a read-only allowlist.",
+  "keywords": ["pi-package", "pi", "read-only"],
+  "license": "MIT",
+  "pi": {
+    "extensions": ["./extensions/read-only.ts"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  }
+}
